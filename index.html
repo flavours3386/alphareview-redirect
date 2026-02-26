@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>알파리뷰 프로모션 신청</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; background: #f8f9fa; color: #333;
+  }
+  .container {
+    text-align: center; padding: 40px 24px; max-width: 400px;
+  }
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid #e0e0e0;
+    border-top-color: #4a6cf7; border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 24px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .msg { font-size: 16px; line-height: 1.6; margin-bottom: 24px; }
+  .btn {
+    display: inline-block; padding: 14px 32px; background: #4a6cf7;
+    color: #fff; text-decoration: none; border-radius: 8px;
+    font-size: 16px; font-weight: 600; border: none; cursor: pointer;
+  }
+  .btn:active { background: #3b5de7; }
+  .sub { font-size: 13px; color: #888; margin-top: 16px; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="loading">
+    <div class="spinner"></div>
+    <p class="msg">프로모션 신청 페이지로<br>이동하고 있습니다...</p>
+  </div>
+  <div id="fallback" class="hidden">
+    <p class="msg">인앱 브라우저에서는<br>폼이 정상 작동하지 않을 수 있습니다.</p>
+    <a id="openBtn" class="btn" href="#">외부 브라우저에서 열기</a>
+    <p class="sub">버튼을 눌러 기본 브라우저에서 열어주세요.</p>
+  </div>
+</div>
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var target = params.get('t');
+  if (!target) {
+    document.querySelector('.msg').textContent = '잘못된 링크입니다.';
+    document.querySelector('.spinner').style.display = 'none';
+    return;
+  }
+
+  // 인앱 브라우저 감지
+  var ua = navigator.userAgent || '';
+  var isInApp = /KAKAOTALK|NAVER|LINE|Instagram|FBAN|FBAV|Twitter|Snapchat|SamsungBrowser\/\d.*Mobile VR/i.test(ua);
+  // 일반적인 WebView 감지 (Android)
+  if (!isInApp && /wv\)/.test(ua)) isInApp = true;
+
+  if (!isInApp) {
+    // 일반 브라우저: 바로 리다이렉트
+    window.location.replace(target);
+    return;
+  }
+
+  // 인앱 브라우저: 외부 브라우저로 열기 시도
+  var loading = document.getElementById('loading');
+  var fallback = document.getElementById('fallback');
+  var openBtn = document.getElementById('openBtn');
+
+  // 카카오톡 전용 스킴
+  if (/KAKAOTALK/i.test(ua)) {
+    window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(target);
+    setTimeout(showFallback, 1500);
+    return;
+  }
+
+  // Android intent 방식
+  if (/Android/i.test(ua)) {
+    var intentUrl = 'intent://' + target.replace(/^https?:\/\//, '') +
+      '#Intent;scheme=https;package=com.android.chrome;end';
+    window.location.href = intentUrl;
+    setTimeout(showFallback, 1500);
+    return;
+  }
+
+  // iOS Safari 열기 (보편적 방법 없음 - 폴백 표시)
+  showFallback();
+
+  function showFallback() {
+    loading.classList.add('hidden');
+    fallback.classList.remove('hidden');
+    openBtn.href = target;
+    // 클릭 시 새 창으로 열기 시도
+    openBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.open(target, '_system') || window.open(target, '_blank') || (window.location.href = target);
+    });
+  }
+})();
+</script>
+</body>
+</html>
