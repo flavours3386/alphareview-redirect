@@ -1,6 +1,28 @@
-# alphareview-redirect - 인앱 브라우저 리다이렉트 - Agent Guide
+# alphareview-redirect
 
-> 이 파일은 목차다. 상세 내용은 각 링크를 따라가라.
+## 프로젝트 개요
+카카오톡, 네이버, LINE 등 인앱 브라우저 환경에서 Tally 프로모션 신청 폼이 정상 동작하지 않는 문제를 해결하기 위해, 외부 브라우저로 자동 전환하거나 폴백 UI를 제공하는 단일 HTML 리다이렉트 페이지.
+
+## 기술 스택
+- 정적 HTML (순수 JavaScript, CSS)
+- 인앱 브라우저 감지: User-Agent 파싱
+- 외부 브라우저 전환: 카카오톡 커스텀 스킴, Android Intent URL
+
+## 주요 명령어
+해당 없음 (정적 HTML 파일로, 별도 빌드 없이 GitHub Pages 등 정적 호스팅에 배포)
+
+## 폴더 구조
+```
+alphareview-redirect/
+├── index.html          # 리다이렉트 로직 포함 메인 페이지 (인앱 브라우저 감지 및 외부 브라우저 전환)
+└── promo_comparison.png # 프로모션 혜택 비교표 이미지
+```
+
+## 사용 방법
+쿼리스트링 `t` 파라미터에 URL 인코딩된 이동 대상 URL을 전달한다.
+```
+https://{배포도메인}/?t={URL_ENCODED_TALLY_LINK}
+```
 
 ## Quick Start
 
@@ -21,8 +43,7 @@
 
 ```
 alphareview-redirect/
-├── CLAUDE.md                # 프로젝트 문서
-├── AGENTS.md                # 이 파일
+├── AGENTS.md                # 프로젝트 문서 (CLAUDE.md는 이 파일의 심볼릭 링크)
 ├── ARCHITECTURE.md          # 시스템 아키텍처
 ├── index.html               # 리다이렉트 페이지 (단일 파일)
 ├── promo_comparison.png     # 프로모션 비교표 이미지 (Tally 폼에서 참조)
@@ -37,8 +58,7 @@ alphareview-redirect/
 
 | 문서 | 용도 | 변경 빈도 |
 |------|------|-----------|
-| CLAUDE.md | 프로젝트 개요, 배포 정보 | 기능 변경 시 |
-| AGENTS.md | 문서 목차 및 핵심 원칙 | 구조 변경 시 |
+| AGENTS.md | 프로젝트 개요, 배포 정보, 핵심 원칙 | 기능·구조 변경 시 |
 | ARCHITECTURE.md | 인앱 감지 로직, 분기 처리 | 로직 변경 시 |
 | docs/PRODUCT_SENSE.md | 제품 방향 | 분기별 |
 | docs/PLANS.md | 우선순위 | 기능 추가 시 |
